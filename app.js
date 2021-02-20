@@ -4,13 +4,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const client = require("socket.io-client");
+const BlockchainLib = require('./lib/Blockchain/Blockchain');
 
 var indexRouter = require('./api/index');
 var usersRouter = require('./api/users');
 var blockchainRouter = require('./api/blockcain');
+var walletRouter = require('./api/wallet');
+var VideosRouter = require('./api/videos');
 
 var app = express();
 const socket = client('http://localhost:3000');
+let blochchain = new BlockchainLib("genisis");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,9 +31,16 @@ const passSocket = function(req, res, next) {
   next();
 }
 
+const passBlockchain = function(req, res, next) {
+  req.blochchain = blochchain;
+  next();
+}
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/blockchain', passSocket ,blockchainRouter);
+app.use('/blockchain', passSocket, passBlockchain, blockchainRouter);
+app.use('/wallet', walletRouter);
+app.use('/videos', passBlockchain, VideosRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
