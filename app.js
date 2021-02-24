@@ -14,7 +14,7 @@ var blockchainRouter = require('./api/blockcain');
 
 var app = express();
 const socket = client('http://localhost:3000');
-let blochchain = new BlockchainLib("genisis");
+let blochchain = new BlockchainLib();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

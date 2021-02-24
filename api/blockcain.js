@@ -3,15 +3,16 @@ var router = express.Router();
 // const BlockchainLib = require('../lib/Blockchain/Blockchain');
 const Block = require('../lib/Blockchain/Block');
 const Transaction = require('../lib/Blockchain/Transaction');
+const MetaData = require('../lib/Blockchain/MetaData');
 
 // let blochchain = new BlockchainLib("genisis");
-const {generateKeyPair} = require('../lib/crypto/Elliptic')
+const {generateKeyPair, sign} = require('../lib/crypto/Elliptic')
 
 
 router.get('/', function(req, res, next) {
   let blochchain = req.blochchain
   res.setHeader('Content-Type', 'application/json');
-  res.json({blochchain: blochchain});
+  res.json({blochchain: blochchain.getBlocks()});
 });
 
 
@@ -48,21 +49,45 @@ router.get('/lastBlock', function(req, res, next) {
 });
 
 
-router.get('/test', function(req, res, next) {
-  // let tx = new Transaction(["tx1", "tx2"])
-  // console.log(tx, "\n\n")
+router.post('/test', function(req, res, next) {
+
+  let blochchain = req.blochchain
+  const keyPair = generateKeyPair();
+
+  // uploading the video and getting the Video MetaData
+  const newVideo = new MetaData("Some Test Video", "1AC8EEC-StreamHash-DCD5589", 0)
+  const metaSig = sign(newVideo.hash, keyPair.privateKey)
+  console.log("Meta Signature", metaSig)
+
+  // make a new tx to add the video to the channel
+  tx = new Transaction()
+  tx = new Transaction(newVideo, metaSig, keyPair.publicKey)
+
   // tx = new Transaction("tcp://file1", "123456F")
   // console.log(tx, "\n\n")
-  tx = new Transaction()
-  console.log(tx)
-  tx.addInput("123456", 0)
-  tx.addOutput("FFEEAA")
-  tx.addOutput("CCAA55")
-
-  blk = new Block(0, "prev", [tx], null)
+  // tx = new Transaction()
+  // console.log(tx)
+  // tx.addInput("tcp://file1", "sig(hash(meta))")
+  // tx.addOutput("FFEEAA")
+  // tx.addOutput("CCAA55")
+  
+  let prevBlock = blochchain.lastBlock()
+  blk = new Block(0, prevBlock.hash, [tx], prevBlock.contentTree)
   console.log(blk)
   blk.verifyBlock()
-  res.json({tx: blk});
+  blochchain.addBlock(blk)
+  res.json({blochchain: blochchain.getBlocks()});
 });
+
+
+router.get('/test2', function(req, res, next) {
+
+  let blochchain = req.blochchain
+  
+  res.json({blochchain: blochchain.lastBlock().contentTree._nodes});
+});
+
+
+
 
 module.exports = router;
