@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SBVSP</title>
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js" integrity="sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js" integrity="sha384-nsg8ua9HAw1y0W1btsyWgBklPnCUAFLuTMS2G72MMONqmOymq585AcH49TLBQObG" crossorigin="anonymous"></script>
+        <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+
+
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="/">SBVSP</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Blockchain</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="videos.html">Videos</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+
+
+        <div class="container-fluid" style="margin: 2rem;">
+            <h2>Channels</h2>
+            <div>
+                <p id="channels"></p>
+            </div>
+            <!-- <div class="row">
+                <h3 style="color: grey;">magdy Dev</h3>
+                <div style="padding-left: 1rem;">
+                    <div class="card" style="width: 18rem;">
+                        <img src="..." class="card-img-top" alt="...">
+                        <div class="card-body">
+                          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        </div>
+                      </div>
+                </div> -->
+            </div>
+        </div>
+          
+    </body>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+
+const baseURL = 'http://localhost:3000'
+
+    $.get(baseURL + "/blockchain/test4", function(data, status){
+
+        let channels = data.contents
+        for(i in channels){
+            console.log(channels[i])
+            let block = '<h3 style="color: grey;">'+  channels[i].name +'</h3>\
+                <div class="row" style="padding-left: 1rem;">\
+                <div>\
+                    <p id="'+ channels[i].name  +'"> </p>\
+                </div>'
+            document.getElementById('channels').innerHTML += block
+            
+            let vid = ''
+            if(channels[i].contents.length > 0){
+                for (j in channels[i].contents){
+                    vid += '<div class="card" style="width: 18rem;">\
+                            <img src="" class="card-img-top" alt="...">\
+                            <div class="card-body">\
+                            <p class="card-text"> <b>video Hash: </b>' + channels[i].contents[j] + '</p>\
+                            </div>\
+                        </div>'
+                }
+            }
+            else{
+                vid = "NO Content in this channel"
+            }
+            
+            document.getElementById(channels[i].name).innerHTML = vid
+            
+        
+
+
+        }
+        console.log(data)
+    });
+
+
+</script>
+</html>
