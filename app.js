@@ -10,10 +10,21 @@ var indexRouter = require('./api/index');
 var usersRouter = require('./api/users');
 var blockchainRouter = require('./api/blockcain');
 // var walletRouter = require('./api/wallet');
-// var VideosRouter = require('./api/videos');
+var videosRouter = require('./api/videos');
+var channelsRouter = require('./api/channels');
 
 var app = express();
 const socket = client('http://localhost:3000');
+// socket.on("connect", () => {
+//   console.log("connect to the peer server")
+// })
+// socket.on("Blockchain:newTransaction", () => {
+//   console.log("new Transaction from the peer server")
+// })
+
+let BlockchainHandler = require('./lib/network/BlockchainHandler');
+BlockchainHandler(socket)
+
 let blochchain = new BlockchainLib();
 
 // view engine setup
@@ -40,7 +51,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/blockchain', passSocket, passBlockchain, blockchainRouter);
 // app.use('/wallet', walletRouter);
-// app.use('/videos', passBlockchain, VideosRouter);
+app.use('/videos', passBlockchain, videosRouter);
+app.use('/channels', passSocket, channelsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

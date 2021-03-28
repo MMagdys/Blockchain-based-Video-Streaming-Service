@@ -19,7 +19,8 @@
     "mongoose": "^5.11.16",
     "morgan": "~1.9.1",
     "socket.io": "^3.1.1",
-    "socket.io-client": "^3.1.1"
+    "socket.io-client": "^3.1.1",
+    "webtorrent": "^0.115.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
