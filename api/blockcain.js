@@ -1,17 +1,18 @@
 var express = require('express');
 var router = express.Router();
 
-const Blockchain = require('../lib/Blockchain/Blockchain');
+// const Blockchain = require('../lib/Blockchain/Blockchain');
 const Block = require('../lib/Blockchain/Block');
-const PatriciaTrie = require('../lib/Blockchain/PatriciaTrie');
+// const PatriciaTrie = require('../lib/Blockchain/PatriciaTrie');
 
 // GLOBAL CONSTANTS
-let CONTENTTREE = new PatriciaTrie()
-let myBlockchain = new Blockchain()
+// let CONTENTTREE = new PatriciaTrie()
+// let myBlockchain = new Blockchain()
 
 
 router.get('/', function(req, res, next) {
 
+  let myBlockchain = req.blochchain
   let socket = req.socket
   socket.emit("Blockchain:blockchain",  (response) => {
     myBlockchain.blocks = response.blocks
@@ -45,6 +46,7 @@ router.get('/validTransactions', function(req, res, next) {
 
 router.post('/constructBlock', function(req, res, next) {
 
+  let myBlockchain = req.blochchain
   let socket = req.socket
   let validTransaction = socket.validTransaction
 
@@ -54,7 +56,6 @@ router.post('/constructBlock', function(req, res, next) {
   block.hashValue()
 
   socket.emit("Blockchain:newBlock", block)
-  myBlockchain.addBlock(block)
   
   res.json(block);
 });
@@ -62,6 +63,7 @@ router.post('/constructBlock', function(req, res, next) {
 
 router.get('/depth', function(req, res, next) {
 
+  let myBlockchain = req.blochchain
   let depth = myBlockchain.getDepth();
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
@@ -71,6 +73,7 @@ router.get('/depth', function(req, res, next) {
 
 router.get('/lastBlock', function(req, res, next) {
 
+  let myBlockchain = req.blochchain
   let lastBlock = myBlockchain.lastBlock();
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');

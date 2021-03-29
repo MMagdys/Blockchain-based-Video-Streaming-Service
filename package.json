@@ -20,7 +20,8 @@
     "morgan": "~1.9.1",
     "socket.io": "^3.1.1",
     "socket.io-client": "^3.1.1",
-    "webtorrent": "^0.115.4"
+    "webtorrent": "^0.115.4",
+    "webtorrent-hybrid": "^4.0.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"

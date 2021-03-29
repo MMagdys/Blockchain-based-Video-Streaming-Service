@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const client = require("socket.io-client");
-const BlockchainLib = require('./lib/Blockchain/Blockchain');
+const Blockchain = require('./lib/Blockchain/Blockchain');
 
 var indexRouter = require('./api/index');
 var usersRouter = require('./api/users');
@@ -21,11 +21,11 @@ const socket = client('http://localhost:3000');
 // socket.on("Blockchain:newTransaction", () => {
 //   console.log("new Transaction from the peer server")
 // })
+let blochchain = new Blockchain();
 
 let BlockchainHandler = require('./lib/network/BlockchainHandler');
-BlockchainHandler(socket)
+BlockchainHandler(socket, blochchain)
 
-let blochchain = new BlockchainLib();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -49,9 +49,9 @@ const passBlockchain = function(req, res, next) {
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/blockchain', passSocket, passBlockchain, blockchainRouter);
+app.use('/blockchain', passBlockchain, passSocket, blockchainRouter);
 // app.use('/wallet', walletRouter);
-app.use('/videos', passBlockchain, videosRouter);
+app.use('/videos', passBlockchain, passSocket, videosRouter);
 app.use('/channels', passSocket, channelsRouter);
 
 // catch 404 and forward to error handler

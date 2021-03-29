@@ -21,10 +21,10 @@
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Blockchain</a>
+                    <a class="nav-link" aria-current="page" href="/">Blockchain</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="videos.html">Videos</a>
+                    <a class="nav-link active" href="videos.html">Videos</a>
                   </li>
                 </ul>
               </div>
@@ -33,9 +33,11 @@
 
 
         <div class="container-fluid" style="margin: 2rem;">
-            <h2>Channels</h2>
+            <h2>Latest Videos</h2>
             <div>
-                <p id="channels"></p>
+              <div class="row">
+                <p id="videos"></p>
+              </div>
             </div>
             <!-- <div class="row">
                 <h3 style="color: grey;">magdy Dev</h3>
@@ -58,41 +60,60 @@
 
 const baseURL = 'http://localhost:3000'
 
-    $.get(baseURL + "/blockchain/test4", function(data, status){
+    // $.get(baseURL + "/videos/latest", function(data, status){
 
-        let channels = data.contents
-        for(i in channels){
-            console.log(channels[i])
-            let block = '<h3 style="color: grey;">'+  channels[i].name +'</h3>\
-                <div class="row" style="padding-left: 1rem;">\
-                <div>\
-                    <p id="'+ channels[i].name  +'"> </p>\
-                </div>'
-            document.getElementById('channels').innerHTML += block
+    //     let channels = data.contents
+    //     for(i in channels){
+    //         console.log(channels[i])
+    //         let block = '<h3 style="color: grey;">'+  channels[i].name +'</h3>\
+    //             <div class="row" style="padding-left: 1rem;">\
+    //             <div>\
+    //                 <p id="'+ channels[i].name  +'"> </p>\
+    //             </div>'
+    //         document.getElementById('channels').innerHTML += block
             
-            let vid = ''
-            if(channels[i].contents.length > 0){
-                for (j in channels[i].contents){
-                    vid += '<div class="card" style="width: 18rem;">\
-                            <img src="" class="card-img-top" alt="...">\
-                            <div class="card-body">\
-                            <p class="card-text"> <b>video Hash: </b>' + channels[i].contents[j] + '</p>\
-                            </div>\
-                        </div>'
-                }
-            }
-            else{
-                vid = "NO Content in this channel"
-            }
+    //         let vid = ''
+    //         if(channels[i].contents.length > 0){
+    //             for (j in channels[i].contents){
+    //                 vid += '<div class="card" style="width: 18rem;">\
+    //                         <img src="" class="card-img-top" alt="...">\
+    //                         <div class="card-body">\
+    //                         <p class="card-text"> <b>video Hash: </b>' + channels[i].contents[j] + '</p>\
+    //                         </div>\
+    //                     </div>'
+    //             }
+    //         }
+    //         else{
+    //             vid = "NO Content in this channel"
+    //         }
             
-            document.getElementById(channels[i].name).innerHTML = vid
+    //         document.getElementById(channels[i].name).innerHTML = vid
             
         
 
 
-        }
-        console.log(data)
-    });
+    //     }
+    //     console.log(data)
+    // });
+
+    $.get(baseURL + "/videos/latest", function(data, status){
+
+      let content = data.content
+      let vid = ''
+      for(i in content){
+          console.log(content[i])
+          vid += '<div class="col-3" style="padding: 1rem">\
+          <div class="card" ">\
+                          <img src="https://bofk.no/wp-content/plugins/video-thumbnails/default.jpg" class="card-img-top" alt="...">\
+                          <div class="card-body">\
+                          <p class="card-text"> <b> ' + content[i].metaData.name + '</b> </p>\
+                          </div>\
+                          </div>\
+                      </div>'
+      }
+      document.getElementById('videos').innerHTML = vid
+      console.log(data)
+      });
 
 
 </script>

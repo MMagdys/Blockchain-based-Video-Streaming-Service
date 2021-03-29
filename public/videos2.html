@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+    <title>Video Streamer Service</title>
+    <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">VSS</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+	  
+		<div class="collapse navbar-collapse" id="navbarColor03">
+		  <ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+			  <a class="nav-link" href="#">Home
+				<span class="sr-only">(current)</span>
+			  </a>
+			</li>
+			<li class="nav-item">
+			  <a class="nav-link" href="#">Videos</a>
+			</li>
+		  </ul>
+		</div>
+	  </nav>
+
+    <div class="container">
+        <h2>Stream video using Torrent magnet Link</h2>
+        <div class="video" style="display:none">
+            <video width="640" height="360" autoplay preload controls type="video/mp4" src="" style="background:black"></video>
+            <br>
+            <button onclick="stopStreaming();">Stop</button>
+        </div>
+        <div class="input">
+			<input type="text" style="width:350px" name="torrent" placeholder="Enter torrent URL." 
+			value="magnet:?xt=urn:btih:55F44A7544F6984C1CB4EA84FB2D01DD89B727CF&dn=The+Mask+%281994%29+1080p+BrRip+x264+-+YIFY&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce"
+			/>
+            <button onclick="stream();">Stream!</button>
+            <button onclick="addToLibrary();">Add</button>
+		</div>
+		<div class="conatiner" style="margin-top: 2rem;" >
+			<span><h2>My Videos</h2></span> 
+			<span><button type="button" onclick="myLibrary();" class="btn btn-link">refresh</button></span>
+			<div class="row" id="content" style="margin-top: 1rem;"></div>
+		</div>
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="javascripts/bootstrap.min.js" ></script>
+<script src="javascripts/main.js" ></script>
+</html>
