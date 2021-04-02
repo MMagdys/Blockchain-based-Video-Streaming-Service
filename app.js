@@ -6,15 +6,16 @@ var logger = require('morgan');
 const client = require("socket.io-client");
 const Blockchain = require('./lib/Blockchain/Blockchain');
 
-var indexRouter = require('./api/index');
-var usersRouter = require('./api/users');
-var blockchainRouter = require('./api/blockcain');
+var indexRouter = require('./api/V0.1/index');
+var usersRouter = require('./api/V0.1/users');
+var blockchainRouter = require('./api/V0.1/blockcain');
 // var walletRouter = require('./api/wallet');
-var videosRouter = require('./api/videos');
-var channelsRouter = require('./api/channels');
+var videosRouter = require('./api/V0.1/videos');
+var channelsRouter = require('./api/V0.1/channels');
 
 var app = express();
-const socket = client('http://localhost:3000');
+const socket = client('http://localhost:4000');
+// const socket = client('http://18.193.46.139/', {path: '/api/'}, );
 // socket.on("connect", () => {
 //   console.log("connect to the peer server")
 // })
@@ -47,12 +48,16 @@ const passBlockchain = function(req, res, next) {
   next();
 }
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/blockchain', passBlockchain, passSocket, blockchainRouter);
+let V0 = express.Router();
+
+V0.use('/', indexRouter);
+V0.use('/users', usersRouter);
+V0.use('/blockchain', passBlockchain, passSocket, blockchainRouter);
 // app.use('/wallet', walletRouter);
-app.use('/videos', passBlockchain, passSocket, videosRouter);
-app.use('/channels', passSocket, channelsRouter);
+V0.use('/videos', passBlockchain, passSocket, videosRouter);
+V0.use('/channels', passSocket, channelsRouter);
+
+app.use('/v0', V0);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

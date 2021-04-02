@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const {generateKeyPair} = require('../lib/crypto/Elliptic')
+const {generateKeyPair} = require('../../lib/crypto/Elliptic')
 
 
 /* GET users listing. */

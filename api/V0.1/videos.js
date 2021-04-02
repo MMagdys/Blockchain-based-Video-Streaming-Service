@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
+var cors = require('./cors');
 
 // const VideosLib = require('../lib/Videos/Videos');
-const WebTorrent = require('../lib/Videos/WebTorrent');
-const MetaData = require('../lib/Blockchain/MetaData');
-const Transaction = require('../lib/Blockchain/Transaction');
-const {sign} = require('../lib/crypto/Elliptic')
+const WebTorrent = require('../../lib/Videos/WebTorrent');
+const MetaData = require('../../lib/Blockchain/MetaData');
+const Transaction = require('../../lib/Blockchain/Transaction');
+const {sign} = require('../../lib/crypto/Elliptic')
 
 
 // router.get('/', function(req, res, next) {
@@ -18,6 +19,7 @@ const {sign} = require('../lib/crypto/Elliptic')
 //   })
 // });
 
+router.options('*', cors.corsWithOptions)
 
 router.get('/latest', function(req, res, next) {
   
@@ -36,6 +38,7 @@ router.get('/latest', function(req, res, next) {
           if(block.transactions[j].outputs.metaData){
             content.push({metaData: block.transactions[j].outputs.metaData, 
               channelId: block.transactions[j].outputs.channelId})
+              // WebTorrent.addVideo(block.transactions[j].outputs.metaData.streamHash)
           }
           
         }
@@ -43,6 +46,8 @@ router.get('/latest', function(req, res, next) {
       currentHash = block.prevHash
     }
   }
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.json({content: content});
 });
 
@@ -75,20 +80,22 @@ router.post('/addContent', function(req, res, next) {
 
 router.post('/', function(req, res) {
 
-  WebTorrent.addVideo(req.body.torrent)
+  WebTorrent.addVideo(req.body.infoHash)
   .then((result) => {
       res.statusCode = 200;
-    res.send(result);
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+      res.json(result);
   })
   .catch((err) => {
       res.statusCode = 500;
-      res.send(err)
+      res.json(err)
   })
 })
 
 
 router.get('/stream/:infoHash', async function(req, res, next) {
-
+  console.log(req.params)
 	if(typeof req.params.infoHash == 'undefined' || req.params.infoHash == '') {
         res.status(500).send('Missing infoHash parameter!'); 
         return;
@@ -119,6 +126,8 @@ router.get('/stream/:infoHash', async function(req, res, next) {
                 'Content-Length': chunksize, 
                 'Content-Type': 'video/mp4' 
             }
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
             res.writeHead(206, head);
             var stream = file.createReadStream({start: start, end: end});
             stream.pipe(res);
@@ -130,6 +139,8 @@ router.get('/stream/:infoHash', async function(req, res, next) {
                 'Content-Length': fileSize, 
                 'Content-Type': 'video/mp4' 
             }
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
             res.writeHead(200, head);
             var stream = file.createReadStream({start: start, end: end});
             stream.pipe(res);

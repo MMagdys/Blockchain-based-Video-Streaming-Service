@@ -53,11 +53,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 
-const baseURL = 'http://localhost:3000'
+// const baseURL = 'http://localhost:3000'
+const baseURL = 'http://18.193.46.139/api'
 
     $.get(baseURL + "/blockchain/", function(data, status){
 
-        let blochchain = data.blochchain
+        let blochchain = data
         for(i in blochchain){
             console.log(blochchain[i])
             let block = '<div class="card" style="margin: 1rem;"> \

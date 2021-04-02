@@ -1,22 +1,26 @@
 var express = require('express');
 var router = express.Router();
+var cors = require('./cors');
 
 // const Blockchain = require('../lib/Blockchain/Blockchain');
-const Block = require('../lib/Blockchain/Block');
+const Block = require('../../lib/Blockchain/Block');
 // const PatriciaTrie = require('../lib/Blockchain/PatriciaTrie');
 
 // GLOBAL CONSTANTS
 // let CONTENTTREE = new PatriciaTrie()
 // let myBlockchain = new Blockchain()
 
+router.options('*', cors.corsWithOptions)
 
-router.get('/', function(req, res, next) {
+router.get('/', cors.corsWithOptions, function(req, res, next) {
 
   let myBlockchain = req.blochchain
   let socket = req.socket
   socket.emit("Blockchain:blockchain",  (response) => {
     myBlockchain.blocks = response.blocks
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,OPTIONS')
     res.json(response.blocks);
   })
 });

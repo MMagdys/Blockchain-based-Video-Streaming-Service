@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const WalletLib = require('../lib/wallet/Wallet');
+const WalletLib = require('../../lib/wallet/Wallet');
 
 
 router.get('/', function(req, res, next) {

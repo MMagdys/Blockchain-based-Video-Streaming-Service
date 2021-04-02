@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-const Channel = require('../lib/Blockchain/Channel');
-const Transaction = require('../lib/Blockchain/Transaction');
+const Channel = require('../../lib/Blockchain/Channel');
+const Transaction = require('../../lib/Blockchain/Transaction');
 
 
 /* GET home page. */
