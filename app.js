@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const client = require("socket.io-client");
 const Blockchain = require('./lib/Blockchain/Blockchain');
+const PatriciaTrie = require('./lib/Blockchain/PatriciaTrie')
 
 var indexRouter = require('./api/V0.1/index');
 var usersRouter = require('./api/V0.1/users');
@@ -14,8 +15,8 @@ var videosRouter = require('./api/V0.1/videos');
 var channelsRouter = require('./api/V0.1/channels');
 
 var app = express();
-const socket = client('http://localhost:4000');
-// const socket = client('http://18.193.46.139/', {path: '/api/'}, );
+// const socket = client('http://localhost:4000');
+const socket = client('http://18.193.46.139/', {path: '/socket.io/'}, );
 // socket.on("connect", () => {
 //   console.log("connect to the peer server")
 // })
@@ -23,9 +24,10 @@ const socket = client('http://localhost:4000');
 //   console.log("new Transaction from the peer server")
 // })
 let blochchain = new Blockchain();
+let contentTrie = new PatriciaTrie();
 
 let BlockchainHandler = require('./lib/network/BlockchainHandler');
-BlockchainHandler(socket, blochchain)
+BlockchainHandler(socket, blochchain, contentTrie)
 
 
 // view engine setup
@@ -48,14 +50,19 @@ const passBlockchain = function(req, res, next) {
   next();
 }
 
+const passContentTrie = function(req, res, next) {
+  req.contentTrie = contentTrie;
+  next();
+}
+
 let V0 = express.Router();
 
 V0.use('/', indexRouter);
 V0.use('/users', usersRouter);
 V0.use('/blockchain', passBlockchain, passSocket, blockchainRouter);
 // app.use('/wallet', walletRouter);
-V0.use('/videos', passBlockchain, passSocket, videosRouter);
-V0.use('/channels', passSocket, channelsRouter);
+V0.use('/videos', passBlockchain, passSocket, passContentTrie, videosRouter);
+V0.use('/channels', passSocket, passContentTrie, channelsRouter);
 
 app.use('/v0', V0);
 

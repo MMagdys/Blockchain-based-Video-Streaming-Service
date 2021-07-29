@@ -7,19 +7,32 @@ const WebTorrent = require('../../lib/Videos/WebTorrent');
 const MetaData = require('../../lib/Blockchain/MetaData');
 const Transaction = require('../../lib/Blockchain/Transaction');
 const {sign} = require('../../lib/crypto/Elliptic')
+const initContentService = require('../../services/videos/initContentService');
+const likedVideosService = require('../../services/videos/likedVideosService');
+const blockchainService = require('../../services/blockchain/blockchainService');
 
-
-// router.get('/', function(req, res, next) {
-//   let blochchain = req.blochchain
-//   VideosLib.myLibrary(blochchain)
-//   .then((records) => {
-//     res.statusCode = 200;
-//     res.setHeader('Content-Type', 'application/json');
-//     res.json({records: records});
-//   })
-// });
 
 router.options('*', cors.corsWithOptions)
+
+
+router.get('/init', function(req, res, next) {
+  
+  let myBlockchain = req.blochchain
+  let contentTrie = req.contentTrie
+  let socket = req.socket
+  
+  blockchainService.getBlockchainFromPeers(myBlockchain,socket)
+  .then((result) => {
+    initContentService.initContent(myBlockchain, contentTrie)
+    .then((content) => {
+      console.log(contentTrie)
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+      res.json({content: content});
+    })
+  })
+});
+
 
 router.get('/latest', function(req, res, next) {
   
@@ -56,7 +69,27 @@ router.post('/seedVideo', async function(req, res, next) {
 
   WebTorrent.seedVideo(req.body.videoPath)
   .then((magnetURL) => {
-    res.json({url: magnetURL});
+    res.json({infoHash: magnetURL});
+  })
+});
+
+
+router.post('/addVideo', async function(req, res, next) {
+
+  WebTorrent.seedVideo(req.body.videoPath)
+  .then((magnetURL) => {
+    console.log(req.body)
+    let amount = req.body.amount ? req.body.amount : 0
+    let metaData = new MetaData(req.body.mediaName, magnetURL, amount, req.body.thumbnail);
+
+    let trans = new Transaction();
+    let sig = sign(metaData.hash, req.body.channelPrivateKey)
+    trans.AddContent(metaData, req.body.channelId, sig);
+
+    let socket = req.socket
+    socket.emit("Blockchain:newTransaction", trans);
+    
+    res.json(metaData);
   })
 });
 
@@ -65,7 +98,7 @@ router.post('/addContent', function(req, res, next) {
 
   // create new channel
   let amount = req.body.amount ? req.body.amount : 0
-  let metaData = new MetaData(req.body.mediaName, req.body.streamHash, amount);
+  let metaData = new MetaData(req.body.mediaName, req.body.streamHash, amount, req.body.thumbnail);
 
   let trans = new Transaction();
   let sig = sign(metaData.hash, req.body.channelPrivateKey)
@@ -74,6 +107,9 @@ router.post('/addContent', function(req, res, next) {
   let socket = req.socket
   socket.emit("Blockchain:newTransaction", trans);
   
+  res.statusCode = 200;
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.json(metaData);
 });
 
@@ -151,5 +187,84 @@ router.get('/stream/:infoHash', async function(req, res, next) {
 		res.status(500).send('internal service error');
 	}
 });
+
+
+router.get('/like', function(req, res, next) {
+
+  let contentTrie = req.contentTrie
+  likedVideosService.getAllLikes(contentTrie)
+  .then((result) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    res.json(result);
+  })
+});
+
+
+router.post('/like', function(req, res, next) {
+
+  likedVideosService.likeVideo(req.body)
+  .then((result) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    res.json(result);
+  })
+});
+
+
+router.post('/unlike', function(req, res, next) {
+
+  likedVideosService.unLikeVideo(req.body)
+  .then((result) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    res.json(result);
+  })
+});
+
+
+// router.post()
+
+
+// router.get('/video', function(req, res) {
+//   const path = 'assets/[720pMkv.Com]_Suits.S03E07.480p.WEB-DL.x264-GAnGSteR.mp4'
+//   const stat = fs.statSync(path)
+//   const fileSize = stat.size
+//   const range = req.headers.range
+
+//   if (range) {
+//     const parts = range.replace(/bytes=/, "").split("-")
+//     const start = parseInt(parts[0], 10)
+//     const end = parts[1]
+//       ? parseInt(parts[1], 10)
+//       : fileSize-1
+
+//     if(start >= fileSize) {
+//       res.status(416).send('Requested range not satisfiable\n'+start+' >= '+fileSize);
+//       return
+//     }
+    
+//     const chunksize = (end-start)+1
+//     const file = fs.createReadStream(path, {start, end})
+//     const head = {
+//       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+//       'Accept-Ranges': 'bytes',
+//       'Content-Length': chunksize,
+//       'Content-Type': 'video/mp4',
+//     }
+
+//     res.writeHead(206, head)
+//     file.pipe(res)
+//   } else {
+//     const head = {
+//       'Content-Length': fileSize,
+//       'Content-Type': 'video/mp4',
+//     }
+//     res.writeHead(200, head)
+//     fs.createReadStream(path).pipe(res)
+//   }
+// });
+
+
 
 module.exports = router;
