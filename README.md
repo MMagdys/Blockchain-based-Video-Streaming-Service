@@ -5,15 +5,15 @@ Peer-to-peer blockchain-based Video Streaming service using Blockchain to index 
 
 ## Getting Started
 
-**prerequisites
+**prerequisites**
 - nodejs
 - npm
 
-**Download the source code
+**Download the source code**
 ```
 git clone https://github.com/MMagdys/Blockchain-based-Video-Streaming-Service
 ```
-**Build & Run
+**Build & Run**
 ```
 cd Blockchain-based-Video-Streaming-Service
 npm install
